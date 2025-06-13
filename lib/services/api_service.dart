@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:rickandmorty/models/characters_modal.dart';
+import 'package:rickandmorty/models/episode_model.dart';
 import 'package:rickandmorty/models/info_model.dart';
 
 class ApiService {
@@ -34,6 +35,10 @@ class ApiService {
 
   Future<List<CharacterModel>> getMultipleCharacters(List<int> idList) async {
     try {
+      final filteredIds = idList.whereType<int>().toList(); // null'ları atar
+
+      if (filteredIds.isEmpty) return [];
+
       final response = await _dio.get('/character/${idList.join(',')}');
       final data = response.data;
 
@@ -44,6 +49,24 @@ class ApiService {
       } else {
         throw Exception("Unexpected response format: ${data.runtimeType}");
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<EpisodeModel>> getMultipleEpisodes(List<String> list) async {
+    try {
+      final List<String> episodeNumbers = list
+          .map((e) => e.split('/').last)
+          .toList();
+      String episodes = episodeNumbers.join(',');
+      if (list.length == 1) {
+        episodes = '$episodes,';
+      }
+      final response = await _dio.get('/episode/$episodes');
+      return (response.data as List)
+          .map((e) => EpisodeModel.fromMap(e))
+          .toList();
     } catch (e) {
       rethrow;
     }

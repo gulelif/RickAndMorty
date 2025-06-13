@@ -8,7 +8,6 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBarVidget(),
       body: navigationShell,
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
@@ -74,19 +73,6 @@ class AppView extends StatelessWidget {
             : Theme.of(context).colorScheme.tertiary,
       ),
       label: label,
-    );
-  }
-
-  AppBar _appBarVidget() {
-    return AppBar(
-      title: const Text(
-        'Rick and Morty',
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-      ),
-      actions: //sağ tarafa eklemek için. sola eklemek için leading
-      [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-      ],
     );
   }
 }

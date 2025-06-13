@@ -7,17 +7,30 @@ import 'package:rickandmorty/services/preferences_service.dart';
 class FavouritesViewModel extends ChangeNotifier {
   final _preferencesService = locator<PreferencesService>();
   final _apiService = locator<ApiService>();
+
   List<int> _favourites = [];
   List<CharacterModel> _characters = [];
   List<CharacterModel> get characters => _characters;
 
-  void getFavourites() async {
+  bool isLoading = true;
+
+  Future<void> getFavourites() async {
+    isLoading = true;
+    notifyListeners();
+
     _favourites = _preferencesService.getSavedCharacters();
-    _getCharacters();
+
+    await _getCharacters();
+
+    isLoading = false;
+    notifyListeners();
   }
 
-  void _getCharacters() async {
-    _characters = await _apiService.getMultipleCharacters(_favourites);
-    notifyListeners();
+  Future<void> _getCharacters() async {
+    if (_favourites.isEmpty) {
+      _characters = [];
+    } else {
+      _characters = await _apiService.getMultipleCharacters(_favourites);
+    }
   }
 }

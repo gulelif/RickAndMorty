@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:rickandmorty/models/characters_modal.dart';
 import 'package:rickandmorty/views/app_view.dart';
+import 'package:rickandmorty/views/screens/character_profile_view/character_profile_view.dart';
+import 'package:rickandmorty/views/screens/character_profile_view/character_profile_viewmodel.dart';
 import 'package:rickandmorty/views/screens/characters_view/characters_view.dart';
 import 'package:rickandmorty/views/screens/characters_view/characters_viewmodel.dart';
 import 'package:rickandmorty/views/screens/favourites_view/favourites_view.dart';
@@ -17,6 +20,8 @@ class AppRoutes {
   static const String favourites = '/favourites';
   static const String locations = '/locations';
   static const String sections = '/sections';
+  static const String profileRoute = 'characterProfile';
+  static const String characterProfile = '/characterProfile';
 }
 
 final router = GoRouter(
@@ -36,6 +41,17 @@ final router = GoRouter(
                 create: (context) => CharactersViewModel(),
                 child: const CharactersView(),
               ),
+              routes: [
+                GoRoute(
+                  path: AppRoutes.profileRoute,
+                  builder: (context, state) => ChangeNotifierProvider(
+                    create: (context) => CharacterProfileViewmodel(),
+                    child: CharacterProfileView(
+                      characterModel: state.extra as CharacterModel,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
