@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:rickandmorty/app/locator.dart';
-import 'package:rickandmorty/models/characters_modal.dart';
+import 'package:rickandmorty/models/characters_model.dart';
 import 'package:rickandmorty/services/api_service.dart';
 import 'package:rickandmorty/services/preferences_service.dart';
 

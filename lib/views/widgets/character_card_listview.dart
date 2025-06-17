@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:rickandmorty/app/locator.dart';
-import 'package:rickandmorty/models/characters_modal.dart';
-
+import 'package:rickandmorty/models/characters_model.dart';
 import 'package:rickandmorty/services/preferences_service.dart';
-import 'package:rickandmorty/views/screens/favourites_view/favourites_viewmodel.dart';
 
 import 'character_cardview.dart';
 

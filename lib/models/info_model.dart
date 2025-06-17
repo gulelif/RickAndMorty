@@ -6,7 +6,7 @@ class InfoModel {
   final int? pages;
   final String? next;
   final String? prev;
-  InfoModel({required this.count, required this.pages, this.next, this.prev});
+  InfoModel({this.count, this.pages, this.next, this.prev});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -19,13 +19,15 @@ class InfoModel {
 
   factory InfoModel.fromMap(Map<String, dynamic> map) {
     return InfoModel(
-      count: map['count'] as int,
-      pages: map['pages'] as int,
+      count: map['count'] != null ? map['count'] as int : null,
+      pages: map['pages'] != null ? map['pages'] as int : null,
       next: map['next'] != null ? map['next'] as String : null,
       prev: map['prev'] != null ? map['prev'] as String : null,
     );
   }
+
   String toJson() => json.encode(toMap());
+
   factory InfoModel.fromJson(String source) =>
       InfoModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }

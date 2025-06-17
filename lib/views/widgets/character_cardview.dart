@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rickandmorty/app/locator.dart';
 import 'package:rickandmorty/app/router.dart';
-import 'package:rickandmorty/models/characters_modal.dart';
+import 'package:rickandmorty/models/characters_model.dart';
 import 'package:rickandmorty/services/preferences_service.dart';
 
 class CharacterCardView extends StatefulWidget {
   final CharacterModel characterModel;
-  bool isFavorited;
-
-  CharacterCardView({
+  final bool isFavorited;
+  const CharacterCardView({
     super.key,
     required this.characterModel,
     this.isFavorited = false,
@@ -20,16 +19,35 @@ class CharacterCardView extends StatefulWidget {
 }
 
 class _CharacterCardViewState extends State<CharacterCardView> {
+  late bool isFavorited;
+
+  @override
+  void initState() {
+    isFavorited = widget.isFavorited;
+    super.initState();
+  }
+
+  void _favoriteCharacter() {
+    if (isFavorited) {
+      locator<PreferencesService>().removeCharacter(widget.characterModel.id);
+      isFavorited = false;
+    } else {
+      locator<PreferencesService>().saveCharacter(widget.characterModel.id);
+      isFavorited = true;
+    }
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      //tıklama için Inkwell veya GestureDetector kullanılabilir
       onTap: () => context.push(
         AppRoutes.characterProfile,
         extra: widget.characterModel,
       ),
       child: Padding(
-        padding: EdgeInsetsGeometry.symmetric(vertical: 7),
+        padding: const EdgeInsets.symmetric(vertical: 7),
         child: Stack(
           alignment: Alignment.topRight,
           children: [
@@ -42,10 +60,8 @@ class _CharacterCardViewState extends State<CharacterCardView> {
               child: Row(
                 children: [
                   ClipRRect(
-                    //resme radius vermek için
-                    borderRadius: BorderRadiusGeometry.circular(6),
+                    borderRadius: BorderRadius.circular(6),
                     child: Hero(
-                      // hero ile resme benzersiz bir tag verdiğimizde aynı tagli iki resim arasında geçiş efekti yapar.
                       tag: widget.characterModel.image,
                       child: Image.network(
                         widget.characterModel.image,
@@ -53,47 +69,45 @@ class _CharacterCardViewState extends State<CharacterCardView> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 17),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 17),
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, //sağdan sola hizalama
-                      children: [
-                        Text(
-                          widget.characterModel.name,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 17,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.characterModel.name,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              overflow: TextOverflow.clip,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 5),
-
-                        _infoWidget(
-                          type: "Köken",
-                          value: widget.characterModel.origin.name,
-                        ),
-
-                        SizedBox(height: 3),
-
-                        _infoWidget(
-                          type: "Durum",
-                          value:
-                              '${widget.characterModel.status} - ${widget.characterModel.species}',
-                        ),
-                      ],
+                          const SizedBox(height: 5),
+                          _infoWidget(
+                            type: 'Köken',
+                            value: widget.characterModel.origin.name,
+                          ),
+                          const SizedBox(height: 4),
+                          _infoWidget(
+                            type: 'Durum',
+                            value:
+                                '${widget.characterModel.status} - ${widget.characterModel.species}',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             IconButton(
-              onPressed: () {
-                _favoriteCharacter();
-              },
-              icon: Icon(
-                widget.isFavorited ? Icons.bookmark : Icons.bookmark_border,
-              ),
+              onPressed: _favoriteCharacter,
+              icon: Icon(isFavorited ? Icons.bookmark : Icons.bookmark_border),
             ),
           ],
         ),
@@ -101,24 +115,15 @@ class _CharacterCardViewState extends State<CharacterCardView> {
     );
   }
 
-  void _favoriteCharacter() {
-    if (widget.isFavorited) {
-      locator<PreferencesService>().removeCharacter(widget.characterModel.id);
-      widget.isFavorited = false;
-    } else {
-      locator<PreferencesService>().saveCharacter(widget.characterModel.id);
-      widget.isFavorited = true;
-    }
-
-    setState(() {});
-  }
-
-  Column _infoWidget({required String type, required String value}) {
+  Widget _infoWidget({required String type, required String value}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, //sağdan sola hizalama
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(type, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300)),
-        Text(value, style: TextStyle(fontSize: 12)),
+        Text(
+          type,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
+        ),
+        Text(value, style: const TextStyle(fontSize: 12)),
       ],
     );
   }

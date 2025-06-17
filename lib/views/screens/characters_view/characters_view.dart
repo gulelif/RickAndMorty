@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rickandmorty/views/screens/characters_view/characters_viewmodel.dart';
@@ -34,7 +36,7 @@ class _CharactersViewState extends State<CharactersView> {
                   : viewModel.charactersModel!.characters.isEmpty
                   ? const Expanded(
                       child: Center(
-                        child: const Text(
+                        child: Text(
                           'Hiç karakter bulunamadı',
                           style: TextStyle(fontSize: 18),
                         ),
@@ -69,9 +71,19 @@ class _CharactersViewState extends State<CharactersView> {
           hintText: 'Karakterlerde Ara',
           hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
+          suffixIcon: PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            onSelected: viewModel.onCharacterTypeChanged,
+            itemBuilder: (context) {
+              return ChracterType.values
+                  .map(
+                    (e) => PopupMenuItem<ChracterType>(
+                      value: e,
+                      child: Text(e.name),
+                    ),
+                  )
+                  .toList();
+            },
           ),
         ),
       ),

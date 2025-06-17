@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:rickandmorty/models/characters_modal.dart';
+import 'package:rickandmorty/models/characters_model.dart';
 import 'package:rickandmorty/models/episode_model.dart';
 import 'package:rickandmorty/models/info_model.dart';
+import 'package:rickandmorty/models/location_model.dart';
 
 class ApiService {
   final Dio _dio = Dio(
@@ -54,6 +55,15 @@ class ApiService {
     }
   }
 
+  Future<EpisodesModel> getAllEpisodes({String? url}) async {
+    try {
+      final response = await _dio.get(url ?? '/episode');
+      return EpisodesModel.fromMap(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<EpisodeModel>> getMultipleEpisodes(List<String> list) async {
     try {
       final List<String> episodeNumbers = list
@@ -67,6 +77,29 @@ class ApiService {
       return (response.data as List)
           .map((e) => EpisodeModel.fromMap(e))
           .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LocationModel> getAllLocations({String? url}) async {
+    try {
+      final response = await _dio.get(url ?? '/location');
+      return LocationModel.fromMap(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<CharacterModel>> getCharactersFromUrlList(
+    List<String> residentsUrl,
+  ) async {
+    final List<int> idList = residentsUrl
+        .map((e) => int.parse(e.split('/').last))
+        .toList();
+
+    try {
+      return await getMultipleCharacters(idList);
     } catch (e) {
       rethrow;
     }

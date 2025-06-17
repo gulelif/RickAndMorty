@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rickandmorty/models/characters_modal.dart';
+import 'package:rickandmorty/models/characters_model.dart';
 import 'package:rickandmorty/models/episode_model.dart';
 import 'package:rickandmorty/views/screens/character_profile_view/character_profile_viewmodel.dart';
 import 'package:rickandmorty/views/widgets/appbar_widget.dart';
+import 'package:rickandmorty/views/widgets/decorated_container.dart';
+import 'package:rickandmorty/views/widgets/episodes_listview.dart';
 
 class CharacterProfileView extends StatefulWidget {
   final CharacterModel characterModel;
@@ -29,38 +31,22 @@ class _CharacterProfileViewState extends State<CharacterProfileView> {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppbarWidget(title: 'Karakter', transparentBackground: true),
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/bg-image.png'),
-              alignment: Alignment.topCenter,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
+        body: DecoratedContainer(
+          topChild: _characterAvatar(context),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _characterAvatar(context),
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(50),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 13),
-                      _characterName(),
-                      SizedBox(height: 15),
-                      _labelsView(context),
-                      SizedBox(height: 38),
-                      _scenesTitle(),
-                      SizedBox(height: 15),
-                      _episodeListView(),
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 13),
+                    _characterName(),
+                    SizedBox(height: 15),
+                    _labelsView(context),
+                    SizedBox(height: 38),
+                    _scenesTitle(),
+                    SizedBox(height: 15),
+                    _episodeListView(),
+                  ],
                 ),
               ),
             ],
@@ -74,28 +60,7 @@ class _CharacterProfileViewState extends State<CharacterProfileView> {
     return Flexible(
       child: Consumer<CharacterProfileViewmodel>(
         builder: (context, viewModel, child) {
-          return ListView.separated(
-            padding: EdgeInsets.zero,
-            itemCount: viewModel.episodes.length,
-            itemBuilder: (context, index) {
-              final EpisodeModel model = viewModel.episodes[index];
-              return ListTile(
-                leading: Icon(Icons.face_retouching_natural, size: 36),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text(
-                  model.episode,
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                subtitle: Text(model.name, style: TextStyle(fontSize: 12)),
-              );
-            },
-            separatorBuilder: (context, index) => Divider(
-              color: Theme.of(context).colorScheme.tertiary,
-              indent: 30,
-              endIndent: 30,
-              height: 0,
-            ),
-          );
+          return EpisodesListview(episodes: viewModel.episodes);
         },
       ),
     );

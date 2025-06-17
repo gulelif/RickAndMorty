@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rickandmorty/app/router.dart';
 
 class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool transparentBackground;
+  final bool hideSettings;
   const AppbarWidget({
     super.key,
     required this.title,
     this.transparentBackground = false,
+    this.hideSettings = false,
   });
 
   @override
@@ -19,7 +23,11 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: //sağ tarafa eklemek için. sola eklemek için leading
       [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+        if (!hideSettings)
+          IconButton(
+            onPressed: () => context.push(AppRoutes.settings),
+            icon: const Icon(Icons.settings),
+          ),
       ],
     );
   }
