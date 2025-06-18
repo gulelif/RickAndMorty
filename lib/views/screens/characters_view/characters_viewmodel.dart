@@ -9,55 +9,53 @@ enum ChracterType { all, alive, dead, unknown }
 
 class CharactersViewModel extends ChangeNotifier {
   final _apiService = locator<ApiService>();
-  ChracterType characterType = ChracterType.all;
+
+  ChracterType _characterType = ChracterType.all;
+  ChracterType get characterType => _characterType;
+
+  String _searchText = '';
+  String get searchText => _searchText;
+
   CharactersModel? _charactersModel;
   CharactersModel? get charactersModel => _charactersModel;
-
-  Future<void> getCharacters() async {
-    _charactersModel = null;
-    notifyListeners(); // Geçici null gösterimi (spinner görünür)
-    currentPageIndex = 1;
-    _charactersModel = await _apiService.getCharacters();
-    notifyListeners();
-  }
 
   bool loadMore = false;
   int currentPageIndex = 1;
   Timer? _debounce;
-  void setLoadMore(bool value) {
-    loadMore = value;
+
+  // --- Search text setter ---
+  void setSearchText(String value) {
+    _searchText = value;
     notifyListeners();
   }
 
-  Future<void> getCharactersMore() async {
-    // eğer zaten yükleniyorsa tekrar istek atma veya eğer son sayfada ise tekrar istek atma
-    if (loadMore || _charactersModel!.info?.pages == currentPageIndex) return;
+  // --- Character type setter ---
+  void setCharacterType(ChracterType type) {
+    _characterType = type;
+    notifyListeners();
+  }
 
-    setLoadMore(true);
-    final data = await _apiService.getCharacters(
-      url: _charactersModel!.info?.next,
+  Future<void> getCharacters({String? name, ChracterType? type}) async {
+    // Eğer dışarıdan parametre verilmişse güncelle
+    if (name != null) _searchText = name;
+    if (type != null) _characterType = type;
+
+    currentPageIndex = 1;
+    _charactersModel = null;
+    notifyListeners();
+
+    Map<String, dynamic> args = {};
+
+    if (_searchText.isNotEmpty) {
+      args['name'] = _searchText;
+    }
+    if (_characterType != ChracterType.all) {
+      args['status'] = _characterType.name;
+    }
+
+    _charactersModel = await _apiService.getCharacters(
+      args: args.isEmpty ? null : args,
     );
-    setLoadMore(false);
-    _charactersModel!.info = data?.info;
-    _charactersModel!.characters?.addAll(data!.characters);
-    notifyListeners();
-  }
-
-  void getCharactersByName(String name) async {
-    clearCharacters();
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
-      if (name.isNotEmpty) {
-        _charactersModel = await _apiService.getCharacters(
-          args: {'name': name},
-        );
-      } else {
-        _charactersModel = await _apiService
-            .getCharacters(); // boşsa hepsini getir
-      }
-      notifyListeners();
-    });
     notifyListeners();
   }
 
@@ -67,15 +65,41 @@ class CharactersViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onCharacterTypeChanged(ChracterType type) async {
-    characterType = type;
-    clearCharacters();
-    Map<String, dynamic>? args;
-    if (type != ChracterType.all) {
-      args = {'status': type.name};
-    }
-    _charactersModel = await _apiService.getCharacters(args: args);
+  Future<void> getCharactersMore() async {
+    if (loadMore || _charactersModel?.info?.pages == currentPageIndex) return;
 
+    setLoadMore(true);
+
+    final data = await _apiService.getCharacters(
+      url: _charactersModel!.info?.next,
+    );
+
+    setLoadMore(false);
+
+    _charactersModel!.info = data?.info;
+    _charactersModel!.characters?.addAll(data!.characters);
     notifyListeners();
+  }
+
+  void setLoadMore(bool value) {
+    loadMore = value;
+    notifyListeners();
+  }
+
+  // Debounce ile arama yönetimi
+  void getCharactersByName(String name) {
+    setSearchText(name);
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      await getCharacters(name: name);
+    });
+  }
+
+  // Filtre değiştiğinde çağrılır
+  Future<void> onCharacterTypeChanged(ChracterType type) async {
+    setCharacterType(type);
+    await getCharacters(type: type);
   }
 }
