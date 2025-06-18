@@ -23,20 +23,17 @@ class CharactersViewModel extends ChangeNotifier {
   int currentPageIndex = 1;
   Timer? _debounce;
 
-  // --- Search text setter ---
   void setSearchText(String value) {
     _searchText = value;
     notifyListeners();
   }
 
-  // --- Character type setter ---
   void setCharacterType(ChracterType type) {
     _characterType = type;
     notifyListeners();
   }
 
   Future<void> getCharacters({String? name, ChracterType? type}) async {
-    // Eğer dışarıdan parametre verilmişse güncelle
     if (name != null) _searchText = name;
     if (type != null) _characterType = type;
 
@@ -53,9 +50,9 @@ class CharactersViewModel extends ChangeNotifier {
       args['status'] = _characterType.name;
     }
 
-    _charactersModel = await _apiService.getCharacters(
-      args: args.isEmpty ? null : args,
-    );
+    final apiArgs = args.isEmpty ? null : args;
+
+    _charactersModel = await _apiService.getCharacters(args: apiArgs);
     notifyListeners();
   }
 
@@ -86,7 +83,6 @@ class CharactersViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Debounce ile arama yönetimi
   void getCharactersByName(String name) {
     setSearchText(name);
 
@@ -97,7 +93,6 @@ class CharactersViewModel extends ChangeNotifier {
     });
   }
 
-  // Filtre değiştiğinde çağrılır
   Future<void> onCharacterTypeChanged(ChracterType type) async {
     setCharacterType(type);
     await getCharacters(type: type);
