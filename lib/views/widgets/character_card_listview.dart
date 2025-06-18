@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rickandmorty/app/locator.dart';
 import 'package:rickandmorty/models/characters_model.dart';
 import 'package:rickandmorty/services/preferences_service.dart';
-
+import 'package:rickandmorty/services/global_update_provider.dart';
 import 'character_cardview.dart';
 
 class CharacterCardListView extends StatefulWidget {
   final List<CharacterModel> characters;
   final VoidCallback? onLoadMore;
   final bool loadMore;
+
   const CharacterCardListView({
     super.key,
     required this.characters,
@@ -22,14 +24,20 @@ class CharacterCardListView extends StatefulWidget {
 
 class _CharacterCardListViewState extends State<CharacterCardListView> {
   final _scrollController = ScrollController();
+  final _preferencesService = locator<PreferencesService>();
+
   bool _isLoading = true;
   List<int> _favoritedList = [];
+  late GlobalUpdateNotifier _notifier;
 
   @override
   void initState() {
+    super.initState();
+    _notifier = context
+        .read<GlobalUpdateNotifier>(); // context üzerinden alınmalı
     _getFavorites();
     _detectScrollBottom();
-    super.initState();
+    _notifier.addListener(_onFavoritesChanged);
   }
 
   void _setLoading(bool value) {
@@ -38,9 +46,12 @@ class _CharacterCardListViewState extends State<CharacterCardListView> {
   }
 
   void _getFavorites() async {
-    _favoritedList = locator<PreferencesService>().getSavedCharacters();
+    _favoritedList = _preferencesService.getSavedCharacters();
     _setLoading(false);
-    setState(() {});
+  }
+
+  void _onFavoritesChanged() {
+    _getFavorites(); // Favori değişince güncelle
   }
 
   void _detectScrollBottom() {
@@ -55,6 +66,13 @@ class _CharacterCardListViewState extends State<CharacterCardListView> {
         }
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _notifier.removeListener(_onFavoritesChanged);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override

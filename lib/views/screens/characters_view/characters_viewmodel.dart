@@ -12,9 +12,12 @@ class CharactersViewModel extends ChangeNotifier {
   ChracterType characterType = ChracterType.all;
   CharactersModel? _charactersModel;
   CharactersModel? get charactersModel => _charactersModel;
-  void getCharacters() async {
-    _charactersModel = await _apiService.getCharacters();
 
+  Future<void> getCharacters() async {
+    _charactersModel = null;
+    notifyListeners(); // Geçici null gösterimi (spinner görünür)
+    currentPageIndex = 1;
+    _charactersModel = await _apiService.getCharacters();
     notifyListeners();
   }
 
@@ -26,7 +29,7 @@ class CharactersViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getCharactersMore() async {
+  Future<void> getCharactersMore() async {
     // eğer zaten yükleniyorsa tekrar istek atma veya eğer son sayfada ise tekrar istek atma
     if (loadMore || _charactersModel!.info?.pages == currentPageIndex) return;
 

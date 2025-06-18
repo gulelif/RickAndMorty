@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rickandmorty/services/global_update_provider.dart';
 import 'package:rickandmorty/views/screens/favourites_view/favourites_viewmodel.dart';
 import 'package:rickandmorty/views/widgets/appbar_widget.dart';
 import 'package:rickandmorty/views/widgets/character_card_listview.dart';
@@ -12,13 +13,32 @@ class FavouritesView extends StatefulWidget {
 }
 
 class _FavouritesViewState extends State<FavouritesView> {
+  GlobalUpdateNotifier? _notifier;
+  late VoidCallback _listener;
+
   @override
   void initState() {
     super.initState();
-    // Güvenli context kullanımı
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+    _listener = () {
       context.read<FavouritesViewModel>().getFavourites();
+    };
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // İlk veri çekme
+      context.read<FavouritesViewModel>().getFavourites();
+
+      // Güvenli erişim
+      final notifier = context.read<GlobalUpdateNotifier>();
+      notifier.addListener(_listener);
+      _notifier = notifier;
     });
+  }
+
+  @override
+  void dispose() {
+    _notifier?.removeListener(_listener);
+    super.dispose();
   }
 
   @override

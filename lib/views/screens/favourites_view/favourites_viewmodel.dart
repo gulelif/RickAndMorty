@@ -13,17 +13,18 @@ class FavouritesViewModel extends ChangeNotifier {
   List<CharacterModel> get characters => _characters;
 
   bool isLoading = true;
+  void setisLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
 
   Future<void> getFavourites() async {
-    isLoading = true;
-    notifyListeners();
+    setisLoading(true);
 
     _favourites = _preferencesService.getSavedCharacters();
 
     await _getCharacters();
-
-    isLoading = false;
-    notifyListeners();
+    setisLoading(false);
   }
 
   Future<void> _getCharacters() async {

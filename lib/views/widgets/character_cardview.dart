@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:rickandmorty/app/locator.dart';
 import 'package:rickandmorty/app/router.dart';
 import 'package:rickandmorty/models/characters_model.dart';
+import 'package:rickandmorty/services/global_update_provider.dart';
 import 'package:rickandmorty/services/preferences_service.dart';
 
 class CharacterCardView extends StatefulWidget {
@@ -24,10 +26,11 @@ class _CharacterCardViewState extends State<CharacterCardView> {
   @override
   void initState() {
     isFavorited = widget.isFavorited;
+
     super.initState();
   }
 
-  void _favoriteCharacter() {
+  Future<void> _favoriteCharacter() async {
     if (isFavorited) {
       locator<PreferencesService>().removeCharacter(widget.characterModel.id);
       isFavorited = false;
@@ -36,11 +39,15 @@ class _CharacterCardViewState extends State<CharacterCardView> {
       isFavorited = true;
     }
 
+    notifier.updateAllPages();
+
     setState(() {});
   }
 
+  var notifier = GlobalUpdateNotifier();
   @override
   Widget build(BuildContext context) {
+    notifier = Provider.of<GlobalUpdateNotifier>(context);
     return GestureDetector(
       onTap: () => context.push(
         AppRoutes.characterProfile,
