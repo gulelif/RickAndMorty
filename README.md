@@ -19,10 +19,10 @@ Flutter & Dart
 Rick and Morty API (https://rickandmortyapi.com/)
 
 
-![1000082152](https://github.com/user-attachments/assets/9acfcdeb-2c14-440c-b784-0d7aecbff334)
-![1000082150](https://github.com/user-attachments/assets/7ef54db7-9e51-4d62-b13f-8529b1f9afd9)
-![1000082149_1](https://github.com/user-attachments/assets/5c89269a-252f-4dcf-8725-0180b8846b21)
-![1000082149](https://github.com/user-attachments/assets/96a7e5e5-b769-4a6c-bd8d-4f36e030a7f7)
-![1000082148](https://github.com/user-attachments/assets/4b67eaf9-97a7-4fac-8c28-97da116bd178)
-![1000082147](https://github.com/user-attachments/assets/8add7136-6cd0-427c-9492-8f2569fa7375)
-![1000082151](https://github.com/user-attachments/assets/f58c686a-8755-4f06-a86c-7fa7479ba46f)
+![1000082150](https://github.com/user-attachments/assets/0c474dd4-92e5-4b8f-9cdb-d0eaafb06a31)
+![1000082152](https://github.com/user-attachments/assets/9a9fce6c-1d16-41e5-bcab-2b82b2c3c076)
+![1000082149](https://github.com/user-attachments/assets/ca63432d-7383-4eee-b9b5-34414b446c85)
+![1000082148](https://github.com/user-attachments/assets/84d71c9f-13f8-4142-a514-298978266c01)
+![1000082147](https://github.com/user-attachments/assets/7f007d5b-ca47-43e4-a0b0-5727c200f390)
+![1000082151](https://github.com/user-attachments/assets/5ca2271a-e6e1-468f-a6f3-1cab777b51a8)
+
